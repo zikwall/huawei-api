@@ -11,6 +11,9 @@ $client->setClientId('00000000000000');
 $client->setClientSecret('f00000000000000000000000000000000000000000000000000000000');
 $client->setProductId('00000000000000000000');
 
+// or set config properties from default configuration JSON file (download from huawei dashboard)
+// $client->setAuthConfigFile('agconnect-services.json');
+
 //print_r($client->fetchAccessToken());
 
 use zikwall\huawei_api\services\HuaweiServiceSubscription;
