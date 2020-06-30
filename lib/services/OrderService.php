@@ -10,33 +10,31 @@ class OrderService extends BaseService
     // https://developer.huawei.com/consumer/en/doc/development/HMS-References/iap-api-specification-related-v4#h1-1578554539083-0
     const TOBTOC_SITE_URL = 'https://orders-drru.iap.hicloud.com/applications/purchases/tokens/verify';
 
-    public static function buildServiceUri(): string
+    public static function buildServiceUri() : string
     {
         return static::TOBTOC_SITE_URL;
     }
 
     /**
-     * @param string $accessToken
+     * @param HuaweiClient $client
      * @param string $purchaseToken
-     * @param string $productId
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public static function verifyToken(string $accessToken, string $purchaseToken, string $productId) : array
+    public static function verifyToken(HuaweiClient $client, string $purchaseToken) : array
     {
-        $client = new Client();
-        $response = $client->request('POST', static::buildServiceUri(),
+        $response = $client->getHttpClient()->request('POST', static::buildServiceUri(),
             [
                 'body' => json_encode([
                     'purchaseToken' => $purchaseToken,
-                    'productId'     => $productId,
+                    'productId'     => $client->getProductId(),
                 ]),
                 'headers' =>
                     array_merge(
                         [
                             'Content-Type' => 'application/json; charset=UTF-8'
                         ],
-                        HuaweiClient::makeAuthorizationHeaders($accessToken)
+                        HuaweiClient::makeAuthorizationHeaders($client->getAccessToken())
                     )
             ]);
 
