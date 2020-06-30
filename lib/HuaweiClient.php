@@ -3,6 +3,7 @@
 namespace zikwall\huawei_api;
 
 use GuzzleHttp\Client;
+use zikwall\huawei_api\utils\Region;
 
 class HuaweiClient
 {
@@ -10,6 +11,7 @@ class HuaweiClient
     const OAUTH2_AUTH_URL = 'https://oauth-login.cloud.huawei.com/oauth2/v2/auth';
 
     const DEFAULT_CONFIG_FILE_NAME = 'agconnect-services';
+    const DEFAULT_REGION = Region::RUSSIA;
 
     /**
      * @var \GuzzleHttp\Client
@@ -20,13 +22,17 @@ class HuaweiClient
      */
     private $config = [];
     /**
-     * @var
+     * @var string
      */
     private $token = '';
     /**
      * @var array
      */
     private $cache = [];
+    /**
+     * @var string
+     */
+    private $region = self::DEFAULT_REGION;
 
     public function __construct(array $config = [])
     {
@@ -104,6 +110,20 @@ class HuaweiClient
     }
 
     // getters/setters
+
+    public function setRegion(string $region) : void
+    {
+        if (!Region::isAvailable($region)) {
+            throw new \InvalidArgumentException('region is not available');
+        }
+
+        $this->region = $region;
+    }
+
+    public function getRegion() : string
+    {
+        return $this->region;
+    }
 
     public function setAccessToken(string $token) : void
     {
