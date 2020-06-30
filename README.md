@@ -2,7 +2,7 @@
 
 #### Example usage
 
-``php
+```php
 use zikwall\huawei_api\HuaweiClient;
 
 $client = new HuaweiClient();
