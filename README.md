@@ -15,4 +15,12 @@ $client->setProductId('00000000000000000000');
 // $client->setAuthConfig('agconnect-services.json');
 
 print_r($client->fetchAccessToken());
+
+print_r(
+  SubscriptionService::getSubscription(
+      $client,
+      '000000000000000000000....000000.5255.8.6910',
+      'admob.remove.00000.00000'
+  )
+);
 ```
