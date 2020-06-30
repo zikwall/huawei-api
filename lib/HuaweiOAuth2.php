@@ -24,16 +24,16 @@ class HuaweiOAuth2
      *
      * @var array
      */
-    public static $knownGrantTypes = array(
+    public static $knownGrantTypes = [
         'authorization_code',
         'refresh_token',
         'password',
         'client_credentials',
-    );
+    ];
 
     public function __construct(array $config = [])
     {
-        $this->setConfiguration(array_merge([
+        $config = array_merge([
             'authorizationUri' => '',
             'tokenCredentialUri' => '',
             'redirectUri' => '',
@@ -43,14 +43,14 @@ class HuaweiOAuth2
             'clientSecret' => '',
             'scope' => '',
             'state' => ''
-        ], $config));
+        ], $config);
 
-        $this->setAuthorizationUri($this->config['authorizationUri']);
-        $this->setTokenCredentialUri($this->config['tokenCredentialUri']);
-        $this->setRedirectUri($this->config['redirectUri']);
-        $this->setClientId($this->config['clientId']);
-        $this->setClientSecret($this->config['clientSecret']);
-        $this->setScope($this->config['scope']);
+        $this->setAuthorizationUri($config['authorizationUri']);
+        $this->setTokenCredentialUri($config['tokenCredentialUri']);
+        $this->setRedirectUri($config['redirectUri']);
+        $this->setClientId($config['clientId']);
+        $this->setClientSecret($config['clientSecret']);
+        $this->setScope($config['scope']);
 
         // TODO
         //$this->setUsername($opts['username']);
