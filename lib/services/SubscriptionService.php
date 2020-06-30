@@ -2,30 +2,24 @@
 
 namespace zikwall\huawei_api\services;
 
-use GuzzleHttp\Client;
 use zikwall\huawei_api\HuaweiClient;
+use zikwall\huawei_api\utils\Response;
 
 class SubscriptionService extends BaseService
 {
-    // https://developer.huawei.com/consumer/en/doc/development/HMS-References/iap-api-specification-related-v4#h1-1578554539083-0
-    const TOBTOC_SITE_URL = 'https://subscr-drru.iap.hicloud.com/sub/applications/v2/purchases/get';
-
-    public static function buildServiceUri(): string
-    {
-        return static::TOBTOC_SITE_URL;
-    }
+    const URL_PART = 'sub/applications/v2/purchases/get';
 
     /**
-     * @param string $accessToken
+     * @param HuaweiClient $client
      * @param string $purchaseToken
      * @param string $subscriptionId
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public static function getSubscription(string $accessToken, string $purchaseToken, string $subscriptionId) : array
+    public static function getSubscription(HuaweiClient $client, string $purchaseToken, string $subscriptionId) : array
     {
-        $client = new Client();
-        $response = $client->request('POST', static::buildServiceUri(),
+        $response = $client->getHttpClient()->request('POST',
+            static::buildServiceUri('subscr', $client->getRegion(), static::URL_PART),
             [
                 'body' => json_encode([
                     'subscriptionId' => $subscriptionId,
@@ -36,15 +30,16 @@ class SubscriptionService extends BaseService
                         [
                             'Content-Type' => 'application/json; charset=UTF-8'
                         ],
-                        HuaweiClient::makeAuthorizationHeaders($accessToken)
+                        HuaweiClient::makeAuthorizationHeaders($client->getAccessToken())
                     )
             ]);
 
-        if ($response->getStatusCode() !== 200) {
-            throw new \BadMethodCallException("invalid request to access token");
+        $response = new Response($response);
+
+        if ($response->isOk() === false) {
+            throw new \BadMethodCallException("invalid request to orders");
         }
 
-        $response = json_decode($response->getBody()->getContents(), true);
-        return $response;
+        return $response->toMap();
     }
 }
