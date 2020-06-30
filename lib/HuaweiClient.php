@@ -2,21 +2,19 @@
 
 namespace zikwall\huawei_api;
 
-use GuzzleHttp\Client;
+use zikwall\huawei_api\http\HttpClient;
 use zikwall\huawei_api\utils\Region;
 
 class HuaweiClient
 {
+    use HttpClient;
+
     const OAUTH2_TOKEN_URI = 'https://oauth-login.cloud.huawei.com/oauth2/v2/token';
     const OAUTH2_AUTH_URL = 'https://oauth-login.cloud.huawei.com/oauth2/v2/auth';
 
     const DEFAULT_CONFIG_FILE_NAME = 'agconnect-services';
     const DEFAULT_REGION = Region::RUSSIA;
 
-    /**
-     * @var \GuzzleHttp\Client
-     */
-    private $httpClient = null;
     /**
      * @var array
      */
@@ -69,7 +67,7 @@ class HuaweiClient
      */
     public function fetchAccessToken() : array
     {
-        $response = $this->httpClient->request('POST', static::OAUTH2_TOKEN_URI,
+        $response = $this->getHttpClient()->request('POST', static::OAUTH2_TOKEN_URI,
         [
             'form_params' => [
                 'grant_type'    => 'client_credentials',
@@ -102,11 +100,6 @@ class HuaweiClient
         ];
 
         return $headers;
-    }
-
-    private function makeHttpClient() : void
-    {
-        $this->httpClient = new Client();
     }
 
     // getters/setters
@@ -177,11 +170,6 @@ class HuaweiClient
     public function getProductId() : string
     {
         return $this->config['product_id'];
-    }
-
-    public function getHttpClient() : Client
-    {
-        return $this->httpClient;
     }
 
     public function setAuthConfigFile(string $file) : void
