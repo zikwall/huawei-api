@@ -4,8 +4,12 @@ namespace zikwall\huawei_api\services;
 
 use zikwall\huawei_api\utils\Region;
 
-class BaseService implements ServiceInterface
+abstract class BaseService implements ServiceInterface
 {
+    const SERVICES = [
+        'subscr', 'orders'
+    ];
+
     private $_apiVersion = 'v2';
 
     public function getApiVersion(): string
@@ -18,10 +22,19 @@ class BaseService implements ServiceInterface
         $this->_apiVersion = $version;
     }
 
-    protected static function buildServiceUri(string $service, string $region, string $part) : string
+    protected static function buildServiceUri(string $region) : string
     {
-        $url = static::injectService($service, Region::URIS[$region]);
-        return sprintf("%s/%s", $url, $part);
+        $service = static::getServiceName();
+
+        if (!in_array($service, static::SERVICES)) {
+            throw new \InvalidArgumentException('invalid service name');
+        }
+
+        $region = Region::URIS[$region];
+        $api    = static::getUrlPart();
+        $url    = static::injectService($service, $region);
+
+        return sprintf("%s/%s", $url, $api);
     }
 
     protected static function injectService(string $serviceName, string $url) : string

@@ -7,7 +7,15 @@ use zikwall\huawei_api\utils\Response;
 
 class SubscriptionService extends BaseService
 {
-    const URL_PART = 'sub/applications/v2/purchases/get';
+    public static function getUrlPart() : string
+    {
+        return 'sub/applications/v2/purchases/get';
+    }
+
+    public static function getServiceName() : string
+    {
+        return 'subscr';
+    }
 
     /**
      * @param HuaweiClient $client
@@ -19,7 +27,7 @@ class SubscriptionService extends BaseService
     public static function getSubscription(HuaweiClient $client, string $purchaseToken, string $subscriptionId) : array
     {
         $response = $client->getHttpClient()->request('POST',
-            static::buildServiceUri('subscr', $client->getRegion(), static::URL_PART),
+            static::buildServiceUri($client->getRegion()),
             [
                 'body' => json_encode([
                     'subscriptionId' => $subscriptionId,
