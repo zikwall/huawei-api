@@ -16,7 +16,7 @@ class BaseService implements ServiceInterface
         $this->_apiVersion = $version;
     }
 
-    public static function buildServiceUri(): string
+    public static function buildServiceUri(string $region): string
     {
         return 'not implemented';
     }

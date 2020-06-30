@@ -2,17 +2,24 @@
 
 namespace zikwall\huawei_api\services;
 
-use GuzzleHttp\Client;
 use zikwall\huawei_api\HuaweiClient;
+use zikwall\huawei_api\utils\Region;
 
 class OrderService extends BaseService
 {
     // https://developer.huawei.com/consumer/en/doc/development/HMS-References/iap-api-specification-related-v4#h1-1578554539083-0
-    const TOBTOC_SITE_URL = 'https://orders-drru.iap.hicloud.com/applications/purchases/tokens/verify';
+    const URIS = [
+        Region::CHINA     => 'https://orders-drcn.iap.hicloud.com',
+        Region::GERMANY   => 'https://orders-dre.iap.hicloud.com',
+        Region::SINGAPORE => 'https://orders-dra.iap.hicloud.com',
+        Region::RUSSIA    => 'https://orders-drru.iap.hicloud.com',
+    ];
 
-    public static function buildServiceUri() : string
+    const URL_PART = 'applications/purchases/tokens/verify';
+
+    public static function buildServiceUri(string $region) : string
     {
-        return static::TOBTOC_SITE_URL;
+        return sprintf("%s/%s", static::URIS[$region], static::URL_PART);
     }
 
     /**
@@ -23,7 +30,7 @@ class OrderService extends BaseService
      */
     public static function verifyToken(HuaweiClient $client, string $purchaseToken) : array
     {
-        $response = $client->getHttpClient()->request('POST', static::buildServiceUri(),
+        $response = $client->getHttpClient()->request('POST', static::buildServiceUri($client->getRegion()),
             [
                 'body' => json_encode([
                     'purchaseToken' => $purchaseToken,

@@ -7,5 +7,5 @@ interface ServiceInterface
     public function setApiVersion(string $version) : void;
     public function getApiVersion() : string;
 
-    public static function buildServiceUri() : string;
+    public static function buildServiceUri(string $region) : string;
 }
