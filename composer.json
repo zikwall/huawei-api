@@ -1,0 +1,12 @@
+{
+    "name": "zikwall/huawei-api",
+    "authors": [
+        {
+            "name": "Andrey Kapitonov",
+            "email": "andrey.kapitonov.96@gmail.com"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^7.0"
+    }
+}
