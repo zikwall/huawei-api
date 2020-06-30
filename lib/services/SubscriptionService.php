@@ -3,7 +3,7 @@
 namespace zikwall\huawei_api\services;
 
 use zikwall\huawei_api\HuaweiClient;
-use zikwall\huawei_api\utils\Response;
+use zikwall\huawei_api\utils\HuaweiResponseReader;
 
 class SubscriptionService extends BaseService
 {
@@ -42,7 +42,7 @@ class SubscriptionService extends BaseService
                     )
             ]);
 
-        $response = new Response($response);
+        $response = new HuaweiResponseReader($response);
 
         if ($response->isOk() === false) {
             throw new \BadMethodCallException("invalid request to orders");

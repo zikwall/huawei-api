@@ -4,6 +4,7 @@ namespace zikwall\huawei_api;
 
 use zikwall\huawei_api\http\HttpClient;
 use zikwall\huawei_api\utils\Region;
+use zikwall\huawei_api\utils\HuaweiResponseReader;
 
 class HuaweiClient
 {
@@ -51,7 +52,7 @@ class HuaweiClient
         ], $config));
 
         if (($this->hasConfigProperty('credentials'))) {
-            $this->setAuthConfig($this->config['credentials']);
+            $this->setAuthConfig($this->getConfigProperty('credentials'));
             $this->removeConfigProperty('credentials');
         }
 
@@ -76,11 +77,13 @@ class HuaweiClient
             ]
         ]);
 
-        if ($response->getStatusCode() !== 200) {
+        $response = new HuaweiResponseReader($response);
+
+        if ($response->isOk() === false) {
             throw new \BadMethodCallException("invalid request to access token");
         }
 
-        $credentials = json_decode($response->getBody()->getContents(), true);
+        $credentials = $response->toMap();
         $credentials['created_at'] = time();
 
         $this->setAccessToken($credentials['access_token']);
