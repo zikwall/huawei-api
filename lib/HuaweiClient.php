@@ -89,8 +89,7 @@ class HuaweiClient
     public static function makeAuthorizationHeaders(string $access_token) : array
     {
         $oriString      = sprintf("APPAT:%s", $access_token);
-        $authorization  = sprintf("Basic %s", $oriString);
-
+        $authorization  = sprintf("Basic %s", base64_encode(utf8_encode($oriString)));
         $headers = [
             'Authorization' => $authorization,
             'Content-Type'  => 'application/json;charset=UTF-8'
@@ -158,6 +157,11 @@ class HuaweiClient
     public function getProductId() : string
     {
         return $this->config['product_id'];
+    }
+
+    public function getHttpClient() : Client
+    {
+        return $this->httpClient;
     }
 
     public function setAuthConfigFile(string $file) : void
