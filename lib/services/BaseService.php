@@ -18,13 +18,13 @@ class BaseService implements ServiceInterface
         $this->_apiVersion = $version;
     }
 
-    public static function buildServiceUri(string $service, string $region, string $part) : string
+    protected static function buildServiceUri(string $service, string $region, string $part) : string
     {
         $url = static::injectService($service, Region::URIS[$region]);
         return sprintf("%s/%s", $url, $part);
     }
 
-    public static function injectService(string $serviceName, string $url) : string
+    protected static function injectService(string $serviceName, string $url) : string
     {
         return str_replace('{{service}}', $serviceName, $url);
     }
