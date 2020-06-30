@@ -2,7 +2,7 @@
 
 namespace zikwall\huawei_api;
 
-trait Configurable
+trait HuaweiApiConfigurable
 {
     /**
      * @var array
