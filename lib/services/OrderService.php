@@ -4,6 +4,7 @@ namespace zikwall\huawei_api\services;
 
 use zikwall\huawei_api\HuaweiClient;
 use zikwall\huawei_api\utils\Region;
+use zikwall\huawei_api\utils\Response;
 
 class OrderService extends BaseService
 {
@@ -45,11 +46,12 @@ class OrderService extends BaseService
                     )
             ]);
 
-        if ($response->getStatusCode() !== 200) {
-            throw new \BadMethodCallException("invalid request to access token");
+        $response = new Response($response);
+
+        if ($response->isOk() === false) {
+            throw new \BadMethodCallException("invalid request to orders");
         }
 
-        $response = json_decode($response->getBody()->getContents(), true);
-        return $response;
+        return $response->toMap();
     }
 }
