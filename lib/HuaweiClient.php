@@ -11,12 +11,17 @@ class HuaweiClient
     use HuaweiApiConfigurable;
     use HttpClient;
 
-    const OAUTH2_TOKEN_URI = 'https://oauth-login.cloud.huawei.com/oauth2/v2/token';
-    const OAUTH2_AUTH_URL = 'https://oauth-login.cloud.huawei.com/oauth2/v2/auth';
+    // https://developer.huawei.com/consumer/en/doc/38054564
+    const OAUTH2_TOKEN_URI  = 'https://oauth-login.cloud.huawei.com/oauth2/v2/token';
+    const OAUTH2_AUTH_URL   = 'https://oauth-login.cloud.huawei.com/oauth2/v2/authorize';
 
     const DEFAULT_CONFIG_FILE_NAME = 'agconnect-services';
     const DEFAULT_REGION = HuaweiRegion::RUSSIA;
 
+    /**
+     * @var HuaweiOAuth2
+     */
+    private $auth = null;
     /**
      * @var string
      */
@@ -47,6 +52,12 @@ class HuaweiClient
             // Path to JSON credentials or an array representing those credentials
             // @see HuaweiClient::setAuthConfig
             'credentials' => null,
+
+            'state' => '',
+
+            // Other OAuth2 parameters.
+            'prompt' => '',
+            'access_type' => 'offline',
 
             'redirect_uri' => '',
         ], $config));
@@ -90,6 +101,11 @@ class HuaweiClient
         return $credentials;
     }
 
+    public function fetchAccessTokenWithAuthCode(string $code) : array
+    {
+        // TODO
+    }
+
     public static function makeAuthorizationHeaders(string $access_token) : array
     {
         $oriString      = sprintf("APPAT:%s", $access_token);
@@ -103,6 +119,28 @@ class HuaweiClient
     }
 
     // getters/setters
+
+    public function getOAuth2Service() : HuaweiOAuth2
+    {
+        if (!($this->auth instanceof HuaweiOAuth2)) {
+            $this->auth = $this->makeOAuth2Service();
+        }
+
+        return $this->auth;
+    }
+
+    public function makeOAuth2Service() : HuaweiOAuth2
+    {
+        $auth = new HuaweiOAuth2([
+            'clientId'              => $this->getClientId(),
+            'clientSecret'          => $this->getClientSecret(),
+            'authorizationUri'      => self::OAUTH2_AUTH_URL,
+            'tokenCredentialUri'    => self::OAUTH2_TOKEN_URI,
+            'redirectUri'           => $this->getRedirectUri(),
+        ]);
+
+        return $auth;
+    }
 
     public function setRegion(string $region) : void
     {
