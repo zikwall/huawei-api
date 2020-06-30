@@ -7,7 +7,8 @@ use zikwall\huawei_api\HuaweiClient;
 
 class SubscriptionService extends BaseService
 {
-    const TOBTOC_SITE_URL = 'https://subscr-at-dre.iap.dbankcloud.com/sub/applications/v2/purchases/get';
+    // https://developer.huawei.com/consumer/en/doc/development/HMS-References/iap-api-specification-related-v4#h1-1578554539083-0
+    const TOBTOC_SITE_URL = 'https://subscr-drru.iap.hicloud.com/sub/applications/v2/purchases/get';
 
     public static function buildServiceUri(): string
     {
@@ -26,10 +27,10 @@ class SubscriptionService extends BaseService
         $client = new Client();
         $response = $client->request('POST', static::buildServiceUri(),
             [
-                'form_params' => [
+                'body' => json_encode([
                     'subscriptionId' => $subscriptionId,
                     'purchaseToken'  => $purchaseToken,
-                ],
+                ]),
                 'headers' =>
                     array_merge(
                         [
