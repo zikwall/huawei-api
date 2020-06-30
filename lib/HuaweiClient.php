@@ -7,6 +7,7 @@ use zikwall\huawei_api\utils\Region;
 
 class HuaweiClient
 {
+    use Configurable;
     use HttpClient;
 
     const OAUTH2_TOKEN_URI = 'https://oauth-login.cloud.huawei.com/oauth2/v2/token';
@@ -15,10 +16,6 @@ class HuaweiClient
     const DEFAULT_CONFIG_FILE_NAME = 'agconnect-services';
     const DEFAULT_REGION = Region::RUSSIA;
 
-    /**
-     * @var array
-     */
-    private $config = [];
     /**
      * @var string
      */
@@ -34,7 +31,7 @@ class HuaweiClient
 
     public function __construct(array $config = [])
     {
-        $this->config = array_merge([
+        $this->setConfiguration(array_merge([
             'application_name' => '',
             'configuration_version' => '',
 
@@ -51,11 +48,11 @@ class HuaweiClient
             'credentials' => null,
 
             'redirect_uri' => '',
-        ], $config);
+        ], $config));
 
-        if (!is_null($this->config['credentials'])) {
+        if (($this->hasConfigProperty('credentials'))) {
             $this->setAuthConfig($this->config['credentials']);
-            unset($this->config['credentials']);
+            $this->removeConfigProperty('credentials');
         }
 
         $this->makeHttpClient();
@@ -132,45 +129,6 @@ class HuaweiClient
         return $this->token;
     }
 
-    public function setClientId(string $id) : void
-    {
-        $this->config['client_id'] = $id;
-    }
-
-    public function setClientSecret(string $secret) : void
-    {
-        $this->config['client_secret'] = $secret;
-    }
-
-    public function setRedirectUri(string $uri) : void
-    {
-        $this->config['redirect_uri'] = $uri;
-    }
-
-    public function setProductId(string $product) : void
-    {
-        $this->config['product_id'] = $product;
-    }
-
-    public function getClientId() : string
-    {
-        return $this->config['client_id'];
-    }
-
-    public function getClientSecret() : string
-    {
-        return $this->config['client_secret'];
-    }
-
-    public function getRedirectUri() : string
-    {
-        return $this->config['redirect_uri'];
-    }
-
-    public function getProductId() : string
-    {
-        return $this->config['product_id'];
-    }
 
     public function setAuthConfigFile(string $file) : void
     {
@@ -200,7 +158,6 @@ class HuaweiClient
         $this->setProductId($config['client']['product_id']);
 
         // TODO
-        // set product id
         // set app id
         // set configuration version
         // set package name
