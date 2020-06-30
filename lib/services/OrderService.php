@@ -7,7 +7,15 @@ use zikwall\huawei_api\utils\Response;
 
 class OrderService extends BaseService
 {
-    const URL_PART = 'applications/purchases/tokens/verify';
+    public static function getUrlPart() : string
+    {
+        return 'applications/purchases/tokens/verify';
+    }
+
+    public static function getServiceName() : string
+    {
+        return 'orders';
+    }
 
     /**
      * @param HuaweiClient $client
@@ -18,7 +26,7 @@ class OrderService extends BaseService
     public static function verifyToken(HuaweiClient $client, string $purchaseToken) : array
     {
         $response = $client->getHttpClient()->request('POST',
-            static::buildServiceUri('orders', $client->getRegion(), static::URL_PART),
+            static::buildServiceUri($client->getRegion()),
             [
                 'body' => json_encode([
                     'purchaseToken' => $purchaseToken,
