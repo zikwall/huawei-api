@@ -1,6 +1,28 @@
-### Huawei API
+## Huawei API
 
-#### Example usage API
+### Installation
+
+`composer require zikwall/huawei-api` - not available at this time
+
+#### develop mode
+
+```json
+{
+    "minimum-stability": "dev",
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/zikwall/huawei-api.git"
+        }
+    ],
+    "require": {
+        "zikwall/huawei-api": "dev-master"
+    }
+}
+
+```
+
+### Example usage API
 
 ```php
 use zikwall\huawei_api\HuaweiClient;
