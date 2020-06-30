@@ -118,6 +118,26 @@ class HuaweiClient
         return $headers;
     }
 
+    public function makeAuthUrl($scope = '') : string
+    {
+        if (is_array($scope)) {
+            $scope = implode(' ', $scope);
+        }
+
+        $params = array_filter(
+            [
+                'access_type' => $this->config['access_type'],
+                'prompt' => $this->config['prompt'],
+                'response_type' => 'code',
+                'scope' => $scope,
+                'state' => $this->config['state'],
+            ]
+        );
+
+        $auth = $this->getOAuth2Service();
+        return (string) $auth->buildFullAuthorizationUri($params);
+    }
+
     // getters/setters
 
     public function getOAuth2Service() : HuaweiOAuth2
