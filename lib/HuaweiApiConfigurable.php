@@ -37,7 +37,7 @@ trait HuaweiApiConfigurable
         return true;
     }
 
-    public function getConfigProperty(string $key) : string
+    public function getConfigProperty(string $key)
     {
         if ($this->hasConfigProperty($key) === false) {
             return '';
