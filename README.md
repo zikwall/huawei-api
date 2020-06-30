@@ -49,7 +49,7 @@ $client->setAuthConfigFile('agconnect-services.json');
 // or
 $client->setAuthConfig('agconnect-services.json');
 
-//print_r($client->fetchAccessToken());
+print_r($client->fetchAccessToken());
 
 use zikwall\huawei_api\services\HuaweiServiceSubscription;
 use zikwall\huawei_api\services\HuaweiServiceOrder;
