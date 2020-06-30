@@ -9,6 +9,14 @@ class Region
     const SINGAPORE = 'Singapore';
     const RUSSIA = 'Russia';
 
+    // https://developer.huawei.com/consumer/en/doc/development/HMS-References/iap-api-specification-related-v4#h1-1578554539083-0
+    const URIS = [
+        Region::CHINA     => 'https://{{service}}-drcn.iap.hicloud.com',
+        Region::GERMANY   => 'https://{{service}}-dre.iap.hicloud.com',
+        Region::SINGAPORE => 'https://{{service}}-dra.iap.hicloud.com',
+        Region::RUSSIA    => 'https://{{service}}-drru.iap.hicloud.com',
+    ];
+
     public static function getList() : array
     {
         return [

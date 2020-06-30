@@ -2,6 +2,8 @@
 
 namespace zikwall\huawei_api\services;
 
+use zikwall\huawei_api\utils\Region;
+
 class BaseService implements ServiceInterface
 {
     private $_apiVersion = 'v2';
@@ -16,8 +18,14 @@ class BaseService implements ServiceInterface
         $this->_apiVersion = $version;
     }
 
-    public static function buildServiceUri(string $region): string
+    public static function buildServiceUri(string $service, string $region, string $part) : string
     {
-        return 'not implemented';
+        $url = static::injectService($service, Region::URIS[$region]);
+        return sprintf("%s/%s", $url, $part);
+    }
+
+    public static function injectService(string $serviceName, string $url) : string
+    {
+        return str_replace('{{service}}', $serviceName, $url);
     }
 }
