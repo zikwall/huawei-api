@@ -2,7 +2,7 @@
 
 namespace zikwall\huawei_api\utils;
 
-class Region
+class HuaweiRegion
 {
     const CHINA = 'China';
     const GERMANY = 'Germany';
@@ -11,10 +11,10 @@ class Region
 
     // https://developer.huawei.com/consumer/en/doc/development/HMS-References/iap-api-specification-related-v4#h1-1578554539083-0
     const URIS = [
-        Region::CHINA     => 'https://{{service}}-drcn.iap.hicloud.com',
-        Region::GERMANY   => 'https://{{service}}-dre.iap.hicloud.com',
-        Region::SINGAPORE => 'https://{{service}}-dra.iap.hicloud.com',
-        Region::RUSSIA    => 'https://{{service}}-drru.iap.hicloud.com',
+        HuaweiRegion::CHINA     => 'https://{{service}}-drcn.iap.hicloud.com',
+        HuaweiRegion::GERMANY   => 'https://{{service}}-dre.iap.hicloud.com',
+        HuaweiRegion::SINGAPORE => 'https://{{service}}-dra.iap.hicloud.com',
+        HuaweiRegion::RUSSIA    => 'https://{{service}}-drru.iap.hicloud.com',
     ];
 
     public static function getList() : array

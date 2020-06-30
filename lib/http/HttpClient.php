@@ -11,12 +11,12 @@ trait HttpClient
      */
     private $httpClient = null;
 
-    private function makeHttpClient() : void
+    protected function makeHttpClient() : void
     {
         $this->httpClient = new Client();
     }
 
-    public function getHttpClient() : Client
+    protected function getHttpClient() : Client
     {
         return $this->httpClient;
     }

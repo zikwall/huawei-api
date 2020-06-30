@@ -3,19 +3,19 @@
 namespace zikwall\huawei_api;
 
 use zikwall\huawei_api\http\HttpClient;
-use zikwall\huawei_api\utils\Region;
+use zikwall\huawei_api\utils\HuaweiRegion;
 use zikwall\huawei_api\utils\HuaweiResponseReader;
 
 class HuaweiClient
 {
-    use Configurable;
+    use HuaweiApiConfigurable;
     use HttpClient;
 
     const OAUTH2_TOKEN_URI = 'https://oauth-login.cloud.huawei.com/oauth2/v2/token';
     const OAUTH2_AUTH_URL = 'https://oauth-login.cloud.huawei.com/oauth2/v2/auth';
 
     const DEFAULT_CONFIG_FILE_NAME = 'agconnect-services';
-    const DEFAULT_REGION = Region::RUSSIA;
+    const DEFAULT_REGION = HuaweiRegion::RUSSIA;
 
     /**
      * @var string
@@ -106,7 +106,7 @@ class HuaweiClient
 
     public function setRegion(string $region) : void
     {
-        if (!Region::isAvailable($region)) {
+        if (!HuaweiRegion::isAvailable($region)) {
             throw new \InvalidArgumentException('region is not available');
         }
 
