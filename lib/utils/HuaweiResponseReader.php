@@ -4,7 +4,7 @@ namespace zikwall\huawei_api\utils;
 
 use Psr\Http\Message\ResponseInterface;
 
-class Response
+class HuaweiResponseReader
 {
     private $_response = null;
 
