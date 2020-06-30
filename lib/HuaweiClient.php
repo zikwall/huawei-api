@@ -9,8 +9,9 @@ class HuaweiClient
 {
     use HttpClient;
 
-    const OAUTH2_TOKEN_URI = 'https://oauth-login.cloud.huawei.com/oauth2/v2/token';
-    const OAUTH2_AUTH_URL = 'https://oauth-login.cloud.huawei.com/oauth2/v2/auth';
+    // https://developer.huawei.com/consumer/en/doc/38054564
+    const OAUTH2_TOKEN_URI  = 'https://oauth-login.cloud.huawei.com/oauth2/v2/token';
+    const OAUTH2_AUTH_URL   = 'https://oauth-login.cloud.huawei.com/oauth2/v2/authorize';
 
     const DEFAULT_CONFIG_FILE_NAME = 'agconnect-services';
     const DEFAULT_REGION = Region::RUSSIA;
@@ -31,6 +32,10 @@ class HuaweiClient
      * @var string
      */
     private $region = self::DEFAULT_REGION;
+    /**
+     * @var OAuth2
+     */
+    private $auth;
 
     public function __construct(array $config = [])
     {
@@ -51,6 +56,11 @@ class HuaweiClient
             'credentials' => null,
 
             'redirect_uri' => '',
+            'state' => '',
+
+            // Other OAuth2 parameters.
+            'prompt' => '',
+            'access_type' => 'offline',
         ], $config);
 
         if (!is_null($this->config['credentials'])) {
@@ -90,6 +100,31 @@ class HuaweiClient
         return $credentials;
     }
 
+    public function fetchAccessTokenWithAuthCode(string $code) : array
+    {
+
+    }
+
+    public function makeAuthUrl($scope = '') : string
+    {
+        if (is_array($scope)) {
+            $scope = implode(' ', $scope);
+        }
+
+        $params = array_filter(
+            [
+                'access_type' => $this->config['access_type'],
+                'prompt' => $this->config['prompt'],
+                'response_type' => 'code',
+                'scope' => $scope,
+                'state' => $this->config['state'],
+            ]
+        );
+
+        $auth = $this->getOAuth2Service();
+        return (string) $auth->buildFullAuthorizationUri($params);
+    }
+
     public static function makeAuthorizationHeaders(string $access_token) : array
     {
         $oriString      = sprintf("APPAT:%s", $access_token);
@@ -100,6 +135,28 @@ class HuaweiClient
         ];
 
         return $headers;
+    }
+
+    public function getOAuth2Service() : OAuth2
+    {
+        if (!isset($this->auth)) {
+            $this->auth = $this->makeOAuth2Service();
+        }
+
+        return $this->auth;
+    }
+
+    public function makeOAuth2Service() : OAuth2
+    {
+        $auth = new OAuth2([
+            'clientId'          => $this->getClientId(),
+            'clientSecret'      => $this->getClientSecret(),
+            'authorizationUri'   => self::OAUTH2_AUTH_URL,
+            'tokenCredentialUri' => self::OAUTH2_TOKEN_URI,
+            'redirectUri'       => $this->getRedirectUri(),
+        ]);
+
+        return $auth;
     }
 
     // getters/setters
