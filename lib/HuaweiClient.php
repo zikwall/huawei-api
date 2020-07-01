@@ -2,6 +2,7 @@
 
 namespace zikwall\huawei_api;
 
+use zikwall\huawei_api\constants\HuaweiConstants;
 use zikwall\huawei_api\http\HttpClient;
 use zikwall\huawei_api\utils\HuaweiResponseReader;
 
@@ -10,19 +11,10 @@ class HuaweiClient
     use HuaweiApiConfigurable;
     use HttpClient;
 
-    const OAUTH2_TOKEN_URI = 'https://oauth-login.cloud.huawei.com/oauth2/v2/token';
-    const OAUTH2_AUTH_URL = 'https://oauth-login.cloud.huawei.com/oauth2/v2/auth';
-
-
-    /**
-     * @var string
-     */
-    private $token = '';
     /**
      * @var array
      */
     private $cache = [];
-
 
     public function __construct(array $config = [])
     {
@@ -59,7 +51,7 @@ class HuaweiClient
      */
     public function fetchAccessToken() : array
     {
-        $response = $this->getHttpClient()->request('POST', static::OAUTH2_TOKEN_URI,
+        $response = $this->getHttpClient()->request('POST', HuaweiConstants::OAUTH2_TOKEN_URI,
         [
             'form_params' => [
                 'grant_type'    => 'client_credentials',

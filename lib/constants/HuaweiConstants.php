@@ -6,6 +6,10 @@ use zikwall\huawei_api\utils\HuaweiRegion;
 
 class HuaweiConstants
 {
+    // https://developer.huawei.com/consumer/en/doc/38054564
+    const OAUTH2_TOKEN_URI  = 'https://oauth-login.cloud.huawei.com/oauth2/v2/token';
+    const OAUTH2_AUTH_URL   = 'https://oauth-login.cloud.huawei.com/oauth2/v2/authorize';
+
     const DEFAULT_CONFIG_FILE_NAME = 'agconnect-services';
     const DEFAULT_REGION = HuaweiRegion::RUSSIA;
 
