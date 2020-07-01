@@ -2,7 +2,7 @@
 
 namespace zikwall\huawei_api\services;
 
-use zikwall\huawei_api\utils\HuaweiRegion;
+use zikwall\huawei_api\constants\HuaweiConstants;
 
 class HuaweiServiceBase implements HuaweiServiceInterface
 {
@@ -25,9 +25,9 @@ class HuaweiServiceBase implements HuaweiServiceInterface
             throw new \InvalidArgumentException('invalid service name');
         }
 
-        $region = HuaweiRegion::URIS[$region];
+        $regionUri = HuaweiConstants::URIS[$region];
 
-        return sprintf("%s/%s", $this->injectService($this->name, $region), $this->url);
+        return sprintf("%s/%s", $this->injectService($this->name, $regionUri), $this->url);
     }
 
     private function injectService(string $serviceName, string $url) : string
