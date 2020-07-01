@@ -6,7 +6,6 @@ use zikwall\huawei_api\http\HttpClient;
 use zikwall\huawei_api\HuaweiApiConfigurable;
 use zikwall\huawei_api\HuaweiClient;
 use zikwall\huawei_api\utils\HuaweiResponseReader;
-use zikwall\huawei_api\utils\HuaweiRegion;
 
 class HuaweiServiceSubscription extends HuaweiServiceBase
 {
