@@ -2,12 +2,17 @@
 
 namespace zikwall\huawei_api;
 
+use zikwall\huawei_api\constants\HuaweiConstants;
+use zikwall\huawei_api\utils\HuaweiRegion;
+
 trait HuaweiApiConfigurable
 {
     /**
      * @var array
      */
-    private $config = [];
+    private $config = [
+        'region' => HuaweiConstants::DEFAULT_REGION
+    ];
 
     public function setConfiguration(array $config) : void
     {
@@ -91,5 +96,33 @@ trait HuaweiApiConfigurable
     public function getProductId() : string
     {
         return $this->getConfigProperty('product_id');
+    }
+
+    public function setRegion(string $region) : void
+    {
+        if (!HuaweiRegion::isAvailable($region)) {
+            throw new \InvalidArgumentException('region is not available');
+        }
+
+        $this->setConfigProperty('region', $region);
+    }
+
+    public function getRegion() : string
+    {
+        return $this->getConfigProperty('region');
+    }
+
+    public function setAccessToken(string $token) : void
+    {
+        if ($token == null) {
+            throw new \InvalidArgumentException('invalid access token');
+        }
+
+        $this->setConfigProperty('access_token', $token);
+    }
+
+    public function getAccessToken() : string
+    {
+        return $this->getConfigProperty('access_token');
     }
 }

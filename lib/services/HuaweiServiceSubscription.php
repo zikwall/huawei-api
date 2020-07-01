@@ -3,6 +3,7 @@
 namespace zikwall\huawei_api\services;
 
 use zikwall\huawei_api\http\HttpClient;
+use zikwall\huawei_api\HuaweiApiConfigurable;
 use zikwall\huawei_api\HuaweiClient;
 use zikwall\huawei_api\utils\HuaweiResponseReader;
 use zikwall\huawei_api\utils\HuaweiRegion;
@@ -10,6 +11,7 @@ use zikwall\huawei_api\utils\HuaweiRegion;
 class HuaweiServiceSubscription extends HuaweiServiceBase
 {
     use HttpClient;
+    use HuaweiApiConfigurable;
 
     /**
      * @var string
@@ -19,23 +21,13 @@ class HuaweiServiceSubscription extends HuaweiServiceBase
      * @var string
      */
     protected $url = 'sub/applications/v2/purchases/get';
-    /**
-     * @var string
-     */
-    private $accessToken = '';
-    /**
-     * @var string
-     */
-    private $region = HuaweiClient::DEFAULT_REGION;
 
     public function __construct(string $accessToken, string $region = '')
     {
-        $this->accessToken = $accessToken;
+        $this->setAccessToken($accessToken);
 
         if ($region) {
-            if(HuaweiRegion::isAvailable($region)) {
-                $this->region = $region;
-            }
+            $this->setRegion($region);
         }
 
         $this->makeHttpClient();
@@ -50,7 +42,7 @@ class HuaweiServiceSubscription extends HuaweiServiceBase
      */
     public function getSubscription(string $purchaseToken, string $subscriptionId) : array
     {
-        $response = $this->getHttpClient()->request('POST', $this->buildServiceUri($this->region),
+        $response = $this->getHttpClient()->request('POST', $this->buildServiceUri($this->getRegion()),
             [
                 'body' => json_encode([
                     'subscriptionId' => $subscriptionId,
@@ -61,7 +53,7 @@ class HuaweiServiceSubscription extends HuaweiServiceBase
                         [
                             'Content-Type' => 'application/json; charset=UTF-8'
                         ],
-                        HuaweiClient::makeAuthorizationHeaders($this->accessToken)
+                        HuaweiClient::makeAuthorizationHeaders($this->getAccessToken())
                     )
             ]
         );
