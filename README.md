@@ -37,17 +37,18 @@ $client->setProductId('00000000000000000000');
 
 $client = new HuaweiClient([
     'credentials' => [
-        // ..
-    ],
-    // or setup each separately
-    'client_id' => '00000000000000',
-    'client_secret' => 'f00000000000000000000000000000000000000000000000000000000',
+        'client_id' => '00000000000000',
+        'client_secret' => 'f00000000000000000000000000000000000000000000000000000000',
+    ],  
 ]);
 
 // or set config properties from default configuration JSON file (download from huawei dashboard)
 $client->setAuthConfigFile('agconnect-services.json');
 // or
-$client->setAuthConfig('agconnect-services.json');
+$client->setAuthConfig([
+    'client_id' => '00000000000000',
+    'client_secret' => 'f00000000000000000000000000000000000000000000000000000000',
+]);
 
 print_r($client->fetchAccessToken());
 
