@@ -64,11 +64,6 @@ class HuaweiClient
         ]);
 
         $response = new HuaweiResponseReader($response);
-
-        if ($response->isOk() === false) {
-            throw new \BadMethodCallException("invalid request to access token");
-        }
-
         $credentials = $response->toMap();
         $credentials['created_at'] = time();
 
