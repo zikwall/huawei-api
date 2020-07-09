@@ -14,12 +14,12 @@ trait HuaweiApiConfigurable
         'region' => HuaweiConstants::DEFAULT_REGION
     ];
 
-    public function setConfiguration(array $config) : void
+    protected function setConfiguration(array $config) : void
     {
         $this->config = $config;
     }
 
-    public function hasConfigProperty(string $key) : bool
+    protected function hasConfigProperty(string $key) : bool
     {
         if (!isset($this->config[$key])) {
             return false;
@@ -32,7 +32,7 @@ trait HuaweiApiConfigurable
         return true;
     }
 
-    public function removeConfigProperty(string $key) : bool
+    protected function removeConfigProperty(string $key) : bool
     {
         if ($this->hasConfigProperty($key) === false) {
             return false;
@@ -42,7 +42,7 @@ trait HuaweiApiConfigurable
         return true;
     }
 
-    public function getConfigProperty(string $key) : string
+    protected function getConfigProperty(string $key) : string
     {
         if ($this->hasConfigProperty($key) === false) {
             return '';
@@ -51,7 +51,7 @@ trait HuaweiApiConfigurable
         return $this->config[$key];
     }
 
-    public function setConfigProperty(string $key, string $value) : void
+    protected function setConfigProperty(string $key, string $value) : void
     {
         $this->config[$key] = $value;
     }
