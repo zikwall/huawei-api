@@ -59,10 +59,6 @@ class HuaweiServiceOrder extends HuaweiServiceBase
 
         $response = new HuaweiResponseReader($response);
 
-        if ($response->isOk() === false) {
-            throw new \BadMethodCallException("invalid request to orders");
-        }
-
         return $response->toMap();
     }
 }
