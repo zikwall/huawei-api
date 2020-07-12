@@ -119,7 +119,7 @@ class HuaweiClient
     }
 
     // getters/setters
-  
+
     public function getOAuth2Service() : HuaweiOAuth2
     {
         if (!($this->auth instanceof HuaweiOAuth2)) {
@@ -134,8 +134,8 @@ class HuaweiClient
         $auth = new HuaweiOAuth2([
             'clientId'              => $this->getClientId(),
             'clientSecret'          => $this->getClientSecret(),
-            'authorizationUri'      => self::OAUTH2_AUTH_URL,
-            'tokenCredentialUri'    => self::OAUTH2_TOKEN_URI,
+            'authorizationUri'      => HuaweiConstants::OAUTH2_AUTH_URL,
+            'tokenCredentialUri'    => HuaweiConstants::OAUTH2_TOKEN_URI,
             'redirectUri'           => $this->getRedirectUri(),
         ]);
 

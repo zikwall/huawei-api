@@ -51,12 +51,17 @@ trait HuaweiApiConfigurable
         return $this->config[$key];
     }
 
-    protected function setConfigProperty(string $key, string $value) : void
+    protected function setConfigProperty(string $key, $value) : void
     {
         $this->config[$key] = $value;
     }
 
     // getters/setters
+
+    public function setCode(string $code) : void
+    {
+        $this->setConfigProperty('code', $code);
+    }
 
     public function setClientId(string $id) : void
     {
@@ -99,6 +104,12 @@ trait HuaweiApiConfigurable
     }
 
     // OAuth2
+
+    public function getCode() : string
+    {
+        return $this->getConfigProperty('code');
+    }
+
     public function getState() : string
     {
         return $this->getConfigProperty('state');
@@ -112,7 +123,7 @@ trait HuaweiApiConfigurable
     public function getScope() : string
     {
         if ($this->hasConfigProperty('scope') === false) {
-            return $this->getConfigProperty('scope');
+            return '';
         }
 
         return implode(' ', $this->getConfigProperty('scope'));
@@ -140,7 +151,7 @@ trait HuaweiApiConfigurable
             );
         }
     }
-  
+
     public function setRegion(string $region) : void
     {
         if (!HuaweiRegion::isAvailable($region)) {
