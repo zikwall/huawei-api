@@ -2,8 +2,8 @@
 
 namespace zikwall\huawei_api;
 
+use zikwall\huawei_api\constants\HuaweiConstants;
 use zikwall\huawei_api\http\HttpClient;
-use zikwall\huawei_api\utils\HuaweiRegion;
 use zikwall\huawei_api\utils\HuaweiResponseReader;
 
 class HuaweiClient
@@ -11,29 +11,14 @@ class HuaweiClient
     use HuaweiApiConfigurable;
     use HttpClient;
 
-    // https://developer.huawei.com/consumer/en/doc/38054564
-    const OAUTH2_TOKEN_URI  = 'https://oauth-login.cloud.huawei.com/oauth2/v2/token';
-    const OAUTH2_AUTH_URL   = 'https://oauth-login.cloud.huawei.com/oauth2/v2/authorize';
-
-    const DEFAULT_CONFIG_FILE_NAME = 'agconnect-services';
-    const DEFAULT_REGION = HuaweiRegion::RUSSIA;
-
     /**
      * @var HuaweiOAuth2
      */
     private $auth = null;
     /**
-     * @var string
-     */
-    private $token = '';
-    /**
      * @var array
      */
     private $cache = [];
-    /**
-     * @var string
-     */
-    private $region = self::DEFAULT_REGION;
 
     public function __construct(array $config = [])
     {
@@ -76,7 +61,7 @@ class HuaweiClient
      */
     public function fetchAccessToken() : array
     {
-        $response = $this->getHttpClient()->request('POST', static::OAUTH2_TOKEN_URI,
+        $response = $this->getHttpClient()->request('POST', HuaweiConstants::OAUTH2_TOKEN_URI,
         [
             'form_params' => [
                 'grant_type'    => 'client_credentials',
@@ -89,11 +74,6 @@ class HuaweiClient
         ]);
 
         $response = new HuaweiResponseReader($response);
-
-        if ($response->isOk() === false) {
-            throw new \BadMethodCallException("invalid request to access token");
-        }
-
         $credentials = $response->toMap();
         $credentials['created_at'] = time();
 
@@ -139,7 +119,7 @@ class HuaweiClient
     }
 
     // getters/setters
-
+  
     public function getOAuth2Service() : HuaweiOAuth2
     {
         if (!($this->auth instanceof HuaweiOAuth2)) {
@@ -162,48 +142,14 @@ class HuaweiClient
         return $auth;
     }
 
-    public function setRegion(string $region) : void
-    {
-        if (!HuaweiRegion::isAvailable($region)) {
-            throw new \InvalidArgumentException('region is not available');
-        }
-
-        $this->region = $region;
-    }
-
-    public function getRegion() : string
-    {
-        return $this->region;
-    }
-
-    public function setAccessToken(string $token) : void
-    {
-        if ($token == null) {
-            throw new \InvalidArgumentException('invalid json token');
-        }
-
-        $this->token = $token;
-    }
-
-    public function getAccessToken() : string
-    {
-        return $this->token;
-    }
-
-
     public function setAuthConfigFile(string $file) : void
     {
-        $this->setAuthConfig($file);
-    }
-
-    public function setAuthConfig($config) : void
-    {
-        if (is_string($config)) {
-            if (!file_exists($config)) {
-                throw new \InvalidArgumentException(sprintf('file "%s" does not exist', $config));
+        if (is_string($file)) {
+            if (!file_exists($file)) {
+                throw new \InvalidArgumentException(sprintf('file "%s" does not exist', $file));
             }
 
-            $json = file_get_contents($config);
+            $json = file_get_contents($file);
 
             if (!$config = json_decode($json, true)) {
                 throw new \LogicException('invalid json for auth config');
@@ -214,9 +160,14 @@ class HuaweiClient
             throw new \InvalidArgumentException("invalid json content");
         }
 
-        $this->setClientId($config['client']['client_id']);
-        $this->setClientSecret($config['client']['client_secret']);
-        $this->setProductId($config['client']['product_id']);
+        $this->setAuthConfig($config['client']);
+    }
+
+    public function setAuthConfig($config) : void
+    {
+        $this->setClientId($config['client_id']);
+        $this->setClientSecret($config['client_secret']);
+        $this->setProductId($config['product_id']);
 
         // TODO
         // set app id

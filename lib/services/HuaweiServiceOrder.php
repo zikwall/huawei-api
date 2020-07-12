@@ -3,13 +3,14 @@
 namespace zikwall\huawei_api\services;
 
 use zikwall\huawei_api\http\HttpClient;
+use zikwall\huawei_api\HuaweiApiConfigurable;
 use zikwall\huawei_api\HuaweiClient;
 use zikwall\huawei_api\utils\HuaweiResponseReader;
-use zikwall\huawei_api\utils\HuaweiRegion;
 
 class HuaweiServiceOrder extends HuaweiServiceBase
 {
     use HttpClient;
+    use HuaweiApiConfigurable;
 
     /**
      * @var string
@@ -19,23 +20,14 @@ class HuaweiServiceOrder extends HuaweiServiceBase
      * @var string
      */
     protected $url = 'applications/purchases/tokens/verify';
-    /**
-     * @var string
-     */
-    private $accessToken = '';
-    /**
-     * @var string
-     */
-    private $region = HuaweiClient::DEFAULT_REGION;
+
 
     public function __construct(string $accessToken, string $region = '')
     {
-        $this->accessToken = $accessToken;
+        $this->setAccessToken($accessToken);
 
         if ($region) {
-            if(HuaweiRegion::isAvailable($region)) {
-                $this->region = $region;
-            }
+            $this->setRegion($region);
         }
 
         $this->makeHttpClient();
@@ -49,7 +41,7 @@ class HuaweiServiceOrder extends HuaweiServiceBase
      */
     public function verifyToken(string $productId, string $purchaseToken) : array
     {
-        $response = $this->getHttpClient()->request('POST', $this->buildServiceUri($this->region),
+        $response = $this->getHttpClient()->request('POST', $this->buildServiceUri($this->getRegion()),
             [
                 'body' => json_encode([
                     'purchaseToken' => $purchaseToken,
@@ -60,16 +52,12 @@ class HuaweiServiceOrder extends HuaweiServiceBase
                         [
                             'Content-Type' => 'application/json; charset=UTF-8'
                         ],
-                        HuaweiClient::makeAuthorizationHeaders($this->accessToken)
+                        HuaweiClient::makeAuthorizationHeaders($this->getAccessToken())
                     )
             ]
         );
 
         $response = new HuaweiResponseReader($response);
-
-        if ($response->isOk() === false) {
-            throw new \BadMethodCallException("invalid request to orders");
-        }
 
         return $response->toMap();
     }

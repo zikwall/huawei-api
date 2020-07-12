@@ -2,19 +2,24 @@
 
 namespace zikwall\huawei_api;
 
+use zikwall\huawei_api\constants\HuaweiConstants;
+use zikwall\huawei_api\utils\HuaweiRegion;
+
 trait HuaweiApiConfigurable
 {
     /**
      * @var array
      */
-    private $config = [];
+    private $config = [
+        'region' => HuaweiConstants::DEFAULT_REGION
+    ];
 
-    public function setConfiguration(array $config) : void
+    protected function setConfiguration(array $config) : void
     {
         $this->config = $config;
     }
 
-    public function hasConfigProperty(string $key) : bool
+    protected function hasConfigProperty(string $key) : bool
     {
         if (!isset($this->config[$key])) {
             return false;
@@ -27,7 +32,7 @@ trait HuaweiApiConfigurable
         return true;
     }
 
-    public function removeConfigProperty(string $key) : bool
+    protected function removeConfigProperty(string $key) : bool
     {
         if ($this->hasConfigProperty($key) === false) {
             return false;
@@ -37,7 +42,7 @@ trait HuaweiApiConfigurable
         return true;
     }
 
-    public function getConfigProperty(string $key)
+    protected function getConfigProperty(string $key)
     {
         if ($this->hasConfigProperty($key) === false) {
             return '';
@@ -46,7 +51,7 @@ trait HuaweiApiConfigurable
         return $this->config[$key];
     }
 
-    public function setConfigProperty(string $key, $value) : void
+    protected function setConfigProperty(string $key, string $value) : void
     {
         $this->config[$key] = $value;
     }
@@ -94,7 +99,6 @@ trait HuaweiApiConfigurable
     }
 
     // OAuth2
-
     public function getState() : string
     {
         return $this->getConfigProperty('state');
@@ -135,5 +139,34 @@ trait HuaweiApiConfigurable
                 'scopes should be a string or array of strings'
             );
         }
+    }
+  
+    public function setRegion(string $region) : void
+    {
+        if (!HuaweiRegion::isAvailable($region)) {
+            throw new \InvalidArgumentException('region is not available');
+        }
+
+        $this->setConfigProperty('region', $region);
+    }
+
+    public function getRegion() : string
+    {
+        return $this->getConfigProperty('region');
+    }
+
+    public function setAccessToken(string $token) : void
+    {
+        if ($token == null) {
+            throw new \InvalidArgumentException('invalid access token');
+        }
+
+        $this->setConfigProperty('access_token', $token);
+    }
+
+    public function getAccessToken() : string
+    {
+        return $this->getConfigProperty('access_token');
+
     }
 }
