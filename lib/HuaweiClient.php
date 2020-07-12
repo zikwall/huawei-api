@@ -12,6 +12,10 @@ class HuaweiClient
     use HttpClient;
 
     /**
+     * @var HuaweiOAuth2
+     */
+    private $auth = null;
+    /**
      * @var array
      */
     private $cache = [];
@@ -33,6 +37,12 @@ class HuaweiClient
             // Path to JSON credentials or an array representing those credentials
             // @see HuaweiClient::setAuthConfig
             'credentials' => null,
+
+            'state' => '',
+
+            // Other OAuth2 parameters.
+            'prompt' => '',
+            'access_type' => 'offline',
 
             'redirect_uri' => '',
         ], $config));
@@ -71,6 +81,42 @@ class HuaweiClient
         return $credentials;
     }
 
+    public function fetchAccessTokenWithAuthCode(string $code) : array
+    {
+        if (strlen($code) == 0) {
+            throw new \InvalidArgumentException("Invalid code");
+        }
+
+        $auth = $this->getOAuth2Service();
+        $auth->setCode($code);
+        $auth->setRedirectUri($this->getRedirectUri());
+
+        $response = $this->getHttpClient()->post('https://oauth-login.cloud.huawei.com/oauth2/v3/token', [
+            'form_params' => [
+                "grant_type"    => "authorization_code",
+                "client_id"     => $this->getClientId(),
+                "client_secret" => $this->getClientSecret(),
+                // example
+                // "code_verifier" => "123444444dfd4sadfsdwew321454567587658776t896fdfgdscvvbfxdgfdgfdsfasdfsdgd233",
+                "redirect_uri"  => $auth->getRedirectUri(),
+                "code"          => $auth->getCode()
+            ],
+            'headers' => [
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            ]
+        ]);
+
+        $response = new HuaweiResponseReader($response);
+        $creds = $response->toMap();
+
+        if ($creds && isset($creds['access_token'])) {
+            $creds['created'] = time();
+            $this->setAccessToken($creds['access_token']);
+        }
+
+        return $creds;
+    }
+
     public static function makeAuthorizationHeaders(string $access_token) : array
     {
         $oriString      = sprintf("APPAT:%s", $access_token);
@@ -83,7 +129,49 @@ class HuaweiClient
         return $headers;
     }
 
+    public function makeAuthUrl($scope = '') : string
+    {
+        if (is_array($scope)) {
+            $scope = implode(' ', $scope);
+        }
+
+        $params = array_filter(
+            [
+                'access_type' => $this->config['access_type'],
+                'prompt' => $this->config['prompt'],
+                'response_type' => 'code',
+                'scope' => $scope,
+                'state' => $this->config['state'],
+            ]
+        );
+
+        $auth = $this->getOAuth2Service();
+        return (string) $auth->buildFullAuthorizationUri($params);
+    }
+
     // getters/setters
+
+    public function getOAuth2Service() : HuaweiOAuth2
+    {
+        if (!($this->auth instanceof HuaweiOAuth2)) {
+            $this->auth = $this->makeOAuth2Service();
+        }
+
+        return $this->auth;
+    }
+
+    public function makeOAuth2Service() : HuaweiOAuth2
+    {
+        $auth = new HuaweiOAuth2([
+            'clientId'              => $this->getClientId(),
+            'clientSecret'          => $this->getClientSecret(),
+            'authorizationUri'      => HuaweiConstants::OAUTH2_AUTH_URL,
+            'tokenCredentialUri'    => HuaweiConstants::OAUTH2_TOKEN_URI,
+            'redirectUri'           => $this->getRedirectUri(),
+        ]);
+
+        return $auth;
+    }
 
     public function setAuthConfigFile(string $file) : void
     {

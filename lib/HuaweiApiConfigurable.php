@@ -42,7 +42,7 @@ trait HuaweiApiConfigurable
         return true;
     }
 
-    protected function getConfigProperty(string $key) : string
+    protected function getConfigProperty(string $key)
     {
         if ($this->hasConfigProperty($key) === false) {
             return '';
@@ -51,12 +51,17 @@ trait HuaweiApiConfigurable
         return $this->config[$key];
     }
 
-    protected function setConfigProperty(string $key, string $value) : void
+    protected function setConfigProperty(string $key, $value) : void
     {
         $this->config[$key] = $value;
     }
 
     // getters/setters
+
+    public function setCode(string $code) : void
+    {
+        $this->setConfigProperty('code', $code);
+    }
 
     public function setClientId(string $id) : void
     {
@@ -98,6 +103,55 @@ trait HuaweiApiConfigurable
         return $this->getConfigProperty('product_id');
     }
 
+    // OAuth2
+
+    public function getCode() : string
+    {
+        return $this->getConfigProperty('code');
+    }
+
+    public function getState() : string
+    {
+        return $this->getConfigProperty('state');
+    }
+
+    public function setState(string $state) : void
+    {
+        $this->setConfigProperty('state', $state);
+    }
+
+    public function getScope() : string
+    {
+        if ($this->hasConfigProperty('scope') === false) {
+            return '';
+        }
+
+        return implode(' ', $this->getConfigProperty('scope'));
+    }
+
+    public function setScope($scope) : void
+    {
+        if (is_null($scope)) {
+            $this->setConfigProperty('scope', null);
+        } elseif (is_string($scope)) {
+            $this->setConfigProperty('scope', explode(' ', $scope));
+        } elseif (is_array($scope)) {
+            foreach ($scope as $s) {
+                $pos = strpos($s, ' ');
+                if ($pos !== false) {
+                    throw new \InvalidArgumentException(
+                        'array scope values should not contain spaces'
+                    );
+                }
+            }
+            $this->setConfigProperty('scope', $scope);
+        } else {
+            throw new \InvalidArgumentException(
+                'scopes should be a string or array of strings'
+            );
+        }
+    }
+
     public function setRegion(string $region) : void
     {
         if (!HuaweiRegion::isAvailable($region)) {
@@ -124,5 +178,6 @@ trait HuaweiApiConfigurable
     public function getAccessToken() : string
     {
         return $this->getConfigProperty('access_token');
+
     }
 }
