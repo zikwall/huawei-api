@@ -83,7 +83,38 @@ class HuaweiClient
 
     public function fetchAccessTokenWithAuthCode(string $code) : array
     {
-        // TODO
+        if (strlen($code) == 0) {
+            throw new \InvalidArgumentException("Invalid code");
+        }
+
+        $auth = $this->getOAuth2Service();
+        $auth->setCode($code);
+        $auth->setRedirectUri($this->getRedirectUri());
+
+        $response = $this->getHttpClient()->post('https://oauth-login.cloud.huawei.com/oauth2/v3/token', [
+            'form_params' => [
+                "grant_type"    => "authorization_code",
+                "client_id"     => $this->getClientId(),
+                "client_secret" => $this->getClientSecret(),
+                // example
+                // "code_verifier" => "123444444dfd4sadfsdwew321454567587658776t896fdfgdscvvbfxdgfdgfdsfasdfsdgd233",
+                "redirect_uri"  => $auth->getRedirectUri(),
+                "code"          => $auth->getCode()
+            ],
+            'headers' => [
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            ]
+        ]);
+
+        $response = new HuaweiResponseReader($response);
+        $creds = $response->toMap();
+
+        if ($creds && isset($creds['access_token'])) {
+            $creds['created'] = time();
+            $this->setAccessToken($creds['access_token']);
+        }
+
+        return $creds;
     }
 
     public static function makeAuthorizationHeaders(string $access_token) : array
