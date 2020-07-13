@@ -67,5 +67,5 @@ print_r($orders->verifyToken('id', 'token'));
 ### OAuth2
 
 ```php
-<a href="<?= $client->makeAuthUrl(); ?>">Login</a>
+<a href="<?= $client->makeAuthUrl() ?>">Login</a>
 ```
